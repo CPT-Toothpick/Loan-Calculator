@@ -1,525 +1,466 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Loan Amortization Calculator</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
             min-height: 100vh;
             padding: 2rem;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
+            background: #fff;
             border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.18);
             padding: 2rem;
         }
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-        .header h1 {
-            color: #1e40af;
-            font-size: 2rem;
-            flex: 1;
-        }
-        .button-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
+        .header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+        .header h1 { color:#1e40af; font-size:2rem; flex:1; }
+        .button-group { display:flex; gap:.5rem; flex-wrap:wrap; }
         button {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
+            display:flex; align-items:center; gap:.5rem; padding:.6rem 1rem; border:none; border-radius:8px;
+            font-size:1rem; cursor:pointer; transition:all .2s; font-weight:500;
         }
-        .btn-excel {
-            background: #16a34a;
-            color: white;
-        }
-        .btn-excel:hover {
-            background: #15803d;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
-        }
-        .btn-csv {
-            background: #2563eb;
-            color: white;
-        }
-        .btn-csv:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-        }
-        .section {
-            background: #f9fafb;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .section h2 {
-            color: #374151;
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-        }
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-        .input-group label {
-            display: block;
-            color: #6b7280;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        .input-group input:focus {
-            outline: none;
-            border-color: #6366f1;
-        }
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-        .summary-card {
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            overflow: hidden;
-        }
-        .summary-card.indigo {
-            background: #eef2ff;
-        }
-        .summary-card.green {
-            background: #f0fdf4;
-        }
-        .summary-card.blue {
-            background: #eff6ff;
-        }
-        .summary-card.purple {
-            background: #faf5ff;
-        }
-        .summary-label {
-            color: #6b7280;
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-        }
-        .summary-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            word-break: break-word;
-        }
-        @media (max-width: 480px) {
-            .summary-value {
-                font-size: 1.25rem;
-            }
-            .summary-label {
-                font-size: 0.8rem;
-            }
-        }
-        .summary-value.indigo {
-            color: #6366f1;
-        }
-        .summary-value.green {
-            color: #16a34a;
-        }
-        .summary-value.blue {
-            color: #2563eb;
-        }
-        .summary-value.purple {
-            color: #9333ea;
-        }
-        .table-container {
-            overflow-x: auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        thead {
-            background: #4f46e5;
-            color: white;
-        }
-        th {
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-        th.text-right {
-            text-align: right;
-        }
-        tbody tr:nth-child(even) {
-            background: #f9fafb;
-        }
-        tbody tr:hover {
-            background: #f3f4f6;
-        }
-        td {
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        td.text-right {
-            text-align: right;
-        }
-        td.text-center {
-            text-align: center;
-        }
-        td.principal {
-            color: #2563eb;
-        }
-        td.interest {
-            color: #dc2626;
-        }
-        tfoot {
-            background: #f3f4f6;
-            font-weight: 600;
-        }
-        tfoot td {
-            padding: 1rem;
-            border-top: 2px solid #9ca3af;
-        }
-        .icon {
-            width: 20px;
-            height: 20px;
-        }
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-            .container {
-                padding: 1rem;
-            }
-            .header h1 {
-                font-size: 1.5rem;
-            }
-            button {
-                padding: 0.5rem 1rem;
-                font-size: 0.875rem;
-            }
+        .btn-excel { background:#16a34a; color:#fff; }
+        .btn-excel:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(22,163,74,.25); }
+        .btn-csv { background:#2563eb; color:#fff; }
+        .btn-csv:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(37,99,235,.25); }
+        .section { background:#f9fafb; border-radius:8px; padding:1.25rem; margin-bottom:1rem; }
+        .section h2 { color:#374151; font-size:1.125rem; margin-bottom:.75rem; }
+        .input-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
+        .input-group label { display:block; color:#6b7280; font-size:.9rem; font-weight:600; margin-bottom:.4rem; }
+        .input-group input, .input-group select { width:100%; padding:.6rem; border:2px solid #d1d5db; border-radius:6px; font-size:1rem; }
+        .input-group input:focus, .input-group select:focus { outline:none; border-color:#6366f1; }
+        .summary-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:1rem; }
+        .summary-card { padding:1rem 1.2rem; border-radius:8px; text-align:center; overflow:hidden; }
+        .summary-card.indigo { background:#eef2ff; }
+        .summary-card.green { background:#f0fdf4; }
+        .summary-card.blue { background:#eff6ff; }
+        .summary-card.purple { background:#faf5ff; }
+        .summary-label { color:#6b7280; font-size:.85rem; margin-bottom:.4rem; }
+        .summary-value { font-size:1.35rem; font-weight:700; word-break:break-word; }
+        .summary-value.indigo { color:#4338ca; }
+        .summary-value.green { color:#16a34a; }
+        .summary-value.blue { color:#2563eb; }
+        .summary-value.purple { color:#7c3aed; }
+        .table-container { margin-top:1rem; overflow-x:auto; background:#fff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+        table { width:100%; border-collapse:collapse; }
+        thead { background:#4f46e5; color:#fff; }
+        th { padding:.9rem 1rem; text-align:left; font-weight:600; font-size:.9rem; }
+        th.text-right { text-align:right; }
+        tbody tr:nth-child(even){ background:#f9fafb; }
+        tbody tr:hover{ background:#f3f4f6; }
+        td { padding:.6rem 1rem; font-size:.9rem; border-bottom:1px solid #e5e7eb; }
+        td.text-right { text-align:right; }
+        td.text-center { text-align:center; }
+        td.principal { color:#2563eb; }
+        td.interest { color:#dc2626; }
+        tfoot { background:#f3f4f6; font-weight:600; }
+        tfoot td { padding:1rem; border-top:2px solid #9ca3af; }
+        .muted { color:#6b7280; font-size:.9rem; }
+        .controls-inline { display:flex; gap:.75rem; align-items:center; flex-wrap:wrap; }
+        .radio-group { display:flex; gap:.5rem; align-items:center; }
+        .error { color:#b91c1c; margin-top:.5rem; font-weight:600; }
+        @media (max-width:768px) {
+            body { padding:1rem; }
+            .container { padding:1rem; }
+            .header h1 { font-size:1.25rem; }
+            button { padding:.5rem .75rem; font-size:.875rem; }
         }
     </style>
 </head>
 <body>
     <div id="root"></div>
-    
+
     <script type="text/babel">
-        const { useState, useMemo } = React;
+    const { useState, useMemo, useEffect } = React;
 
-        const LoanAmortization = () => {
-          const [loanBalance, setLoanBalance] = useState(31536);
-          const [annualRate, setAnnualRate] = useState(3);
-          const [monthlyPayment, setMonthlyPayment] = useState(1767.89);
+    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 
-          const schedule = useMemo(() => {
-            const monthlyRate = annualRate / 100 / 12;
-            let balance = loanBalance;
-            const payments = [];
-            let month = 1;
-            let totalInterest = 0;
-            let totalPrincipal = 0;
+    function useNumber(value, fallback = 0) {
+      return isNaN(value) ? fallback : value;
+    }
 
-            while (balance > 0.01 && month <= 60) {
-              const interestPayment = balance * monthlyRate;
-              const principalPayment = Math.min(monthlyPayment - interestPayment, balance);
-              const actualPayment = principalPayment + interestPayment;
-              const endingBalance = balance - principalPayment;
+    const LoanAmortization = () => {
+      const today = useMemo(() => new Date(), []);
+      const [loanBalance, setLoanBalance] = useState(31536);
+      const [annualRate, setAnnualRate] = useState(3.0);
+      const [monthlyPayment, setMonthlyPayment] = useState(1767.89);
+      const [termMonths, setTermMonths] = useState(60);
+      const [mode, setMode] = useState('payment'); // 'payment' or 'term'
+      const [error, setError] = useState('');
 
-              totalInterest += interestPayment;
-              totalPrincipal += principalPayment;
+      // formatters
+      const currencyFormatter = useMemo(() => new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }), []);
+      const numberFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
 
-              payments.push({
-                month,
-                beginningBalance: balance,
-                payment: actualPayment,
-                principal: principalPayment,
-                interest: interestPayment,
-                endingBalance: Math.max(0, endingBalance)
-              });
+      // compute monthly payment from term if mode === 'term'
+      useEffect(() => {
+        setError('');
+        const L = parseFloat(loanBalance) || 0;
+        const r = (parseFloat(annualRate) || 0) / 100 / 12;
+        const n = Math.max(1, Math.floor(parseInt(termMonths) || 0));
 
-              balance = endingBalance;
-              month++;
-
-              if (balance <= 0) break;
+        if (mode === 'term') {
+          if (r === 0) {
+            setMonthlyPayment(n ? (L / n) : L);
+          } else {
+            // annuity formula: P = r * L / (1 - (1+r)^-n)
+            const denom = 1 - Math.pow(1 + r, -n);
+            if (denom <= 0) {
+              setMonthlyPayment(L); // fallback
+            } else {
+              const P = r * L / denom;
+              setMonthlyPayment(Number.isFinite(P) ? parseFloat(P.toFixed(2)) : L);
             }
+          }
+        }
+      }, [mode, loanBalance, annualRate, termMonths]);
 
-            return { payments, totalInterest, totalPrincipal };
-          }, [loanBalance, annualRate, monthlyPayment]);
+      // compute amortization schedule
+      const schedule = useMemo(() => {
+        setError('');
+        const payments = [];
+        let totalInterest = 0;
+        let totalPrincipal = 0;
 
-          const formatCurrency = (value) => {
-            return new Intl.NumberFormat('en-US', {
-              style: 'currency',
-              currency: 'USD',
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0
-            }).format(value);
-          };
+        const L = useNumber(parseFloat(loanBalance), 0);
+        const r = useNumber(parseFloat(annualRate), 0) / 100 / 12;
+        let P = useNumber(parseFloat(monthlyPayment), 0);
 
-          const getPayoffDate = (monthsFromNow) => {
-            const date = new Date(2026, 0, 1);
-            date.setMonth(date.getMonth() + monthsFromNow);
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
-          };
+        if (L <= 0) {
+          return { payments, totalInterest, totalPrincipal };
+        }
 
-          const downloadCSV = () => {
-            let csv = 'Month,Date,Beginning Balance,Payment,Principal,Interest,Ending Balance\n';
-            
-            schedule.payments.forEach((payment) => {
-              csv += `${payment.month},${getPayoffDate(payment.month - 1)},${payment.beginningBalance.toFixed(2)},${payment.payment.toFixed(2)},${payment.principal.toFixed(2)},${payment.interest.toFixed(2)},${payment.endingBalance.toFixed(2)}\n`;
+        // safety limits
+        const MAX_MONTHS = 600;
+
+        // Check first month interest vs payment
+        const firstMonthInterest = L * r;
+        if (P <= Number.EPSILON || (P > 0 && P <= firstMonthInterest + 1e-9)) {
+          setError('Monthly payment is too small to ever pay down the loan. Increase the payment or choose a shorter term.');
+          return { payments, totalInterest, totalPrincipal };
+        }
+
+        let balance = L;
+        let month = 1;
+
+        while (balance > 0.005 && month <= MAX_MONTHS) {
+          const interestPayment = balance * r;
+          let principalPayment = P - interestPayment;
+          // If the principal part would overpay on final month, cap it
+          if (principalPayment > balance) {
+            principalPayment = balance;
+            P = principalPayment + interestPayment;
+          }
+          const actualPayment = principalPayment + interestPayment;
+          const endingBalance = Math.max(0, balance - principalPayment);
+
+          totalInterest += interestPayment;
+          totalPrincipal += principalPayment;
+
+          payments.push({
+            month,
+            beginningBalance: balance,
+            payment: actualPayment,
+            principal: principalPayment,
+            interest: interestPayment,
+            endingBalance
+          });
+
+          balance = endingBalance;
+          month++;
+        }
+
+        if (month > MAX_MONTHS && balance > 0.005) {
+          setError('Loan did not amortize within ' + MAX_MONTHS + ' months. Check the payment amount.');
+        }
+
+        return { payments, totalInterest, totalPrincipal };
+      }, [loanBalance, annualRate, monthlyPayment]);
+
+      const formatCurrency = (v) => currencyFormatter.format(v || 0);
+      const formatNumber = (v) => numberFormatter.format(v || 0);
+
+      const getPayoffDate = (monthsFromNow) => {
+        const d = new Date(today.getFullYear(), today.getMonth(), 1);
+        d.setMonth(d.getMonth() + monthsFromNow);
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+      };
+
+      // CSV export (fixed & robust)
+      const downloadCSV = () => {
+        if (!schedule.payments.length) {
+          alert('No schedule to export. Check inputs.');
+          return;
+        }
+        const rows = [];
+        rows.push(['Month','Date','Beginning Balance','Payment','Principal','Interest','Ending Balance']);
+        schedule.payments.forEach(p => {
+          rows.push([
+            p.month,
+            getPayoffDate(p.month - 1),
+            p.beginningBalance.toFixed(2),
+            p.payment.toFixed(2),
+            p.principal.toFixed(2),
+            p.interest.toFixed(2),
+            p.endingBalance.toFixed(2)
+          ]);
+        });
+        // totals row
+        const totalPayments = schedule.payments.reduce((s, x) => s + x.payment, 0);
+        rows.push([]);
+        rows.push(['TOTALS', '', loanBalance.toFixed(2), totalPayments.toFixed(2), schedule.totalPrincipal.toFixed(2), schedule.totalInterest.toFixed(2), '']);
+
+        // convert to CSV with proper escaping
+        const csvContent = rows.map(row => row.map(cell => {
+          if (cell === null || cell === undefined) return '';
+          const str = String(cell);
+          // escape quotes
+          if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+            return `"${str.replace(/"/g, '""')}"`;
+          }
+          return str;
+        }).join(',')).join('\r\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'loan_amortization_schedule.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+
+      // Excel export — write numeric values (if library unavailable, attempt to load)
+      const downloadExcel = async () => {
+        if (!schedule.payments.length) {
+          alert('No schedule to export. Check inputs.');
+          return;
+        }
+        try {
+          if (!window.XLSX) {
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
             });
-            
-            csv += `\nTotals,,${loanBalance.toFixed(2)},${schedule.payments.reduce((sum, p) => sum + p.payment, 0).toFixed(2)},${schedule.totalPrincipal.toFixed(2)},${schedule.totalInterest.toFixed(2)},0.00\n`;
-            
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'loan_amortization_schedule.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-          };
+          }
+          const XLSX = window.XLSX;
+          const wb = XLSX.utils.book_new();
 
-          const downloadExcel = async () => {
-            try {
-              if (!window.XLSX) {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-                
-                await new Promise((resolve, reject) => {
-                  script.onload = resolve;
-                  script.onerror = reject;
-                  document.head.appendChild(script);
-                });
-              }
-              
-              const XLSX = window.XLSX;
-              const wb = XLSX.utils.book_new();
-              
-              const inputData = [
-                ['Loan Amortization Calculator', ''],
-                ['', ''],
-                ['Input Parameters', ''],
-                ['Starting Loan Balance', loanBalance],
-                ['Annual Interest Rate (%)', annualRate],
-                ['Monthly Payment (P&I)', monthlyPayment],
-                ['Monthly Interest Rate', annualRate/100/12],
-                ['', ''],
-                ['Summary', ''],
-                ['Months to Payoff', schedule.payments.length],
-                ['Total Interest Paid', schedule.totalInterest],
-                ['Total Principal Paid', schedule.totalPrincipal],
-                ['Estimated Payoff Date', getPayoffDate(schedule.payments.length - 1)]
-              ];
-              
-              const scheduleData = [
-                ['Month', 'Date', 'Beginning Balance', 'Payment', 'Principal', 'Interest', 'Ending Balance'],
-              ];
-              
-              for (let i = 1; i <= 60; i++) {
-                const row = i;
-                
-                if (i === 1) {
-                  scheduleData.push([
-                    i,
-                    getPayoffDate(i - 1),
-                    { f: 'Inputs!B4' },
-                    { f: 'Inputs!B6' },
-                    { f: `D${row+1}-F${row+1}` },
-                    { f: `C${row+1}*Inputs!B7` },
-                    { f: `C${row+1}-E${row+1}` }
-                  ]);
-                } else {
-                  scheduleData.push([
-                    i,
-                    getPayoffDate(i - 1),
-                    { f: `IF(G${row},G${row},0)` },
-                    { f: `IF(C${row+1}>0,Inputs!B6,0)` },
-                    { f: `IF(C${row+1}>0,MIN(D${row+1}-F${row+1},C${row+1}),0)` },
-                    { f: `IF(C${row+1}>0,C${row+1}*Inputs!B7,0)` },
-                    { f: `IF(C${row+1}>0,MAX(C${row+1}-E${row+1},0),0)` }
-                  ]);
-                }
-              }
-              
-              scheduleData.push([
-                'TOTALS',
-                '',
-                '',
-                { f: 'SUM(D2:D61)' },
-                { f: 'SUM(E2:E61)' },
-                { f: 'SUM(F2:F61)' },
-                ''
-              ]);
-              
-              const wsInputs = XLSX.utils.aoa_to_sheet(inputData);
-              const wsSchedule = XLSX.utils.aoa_to_sheet(scheduleData);
-              
-              wsInputs['!cols'] = [{ wch: 28 }, { wch: 18 }];
-              wsSchedule['!cols'] = [
-                { wch: 8 }, { wch: 14 }, { wch: 20 }, { wch: 14 },
-                { wch: 16 }, { wch: 14 }, { wch: 20 }
-              ];
-              
-              XLSX.utils.book_append_sheet(wb, wsInputs, 'Inputs');
-              XLSX.utils.book_append_sheet(wb, wsSchedule, 'Amortization Schedule');
-              
-              XLSX.writeFile(wb, 'loan_amortization.xlsx');
-            } catch (error) {
-              console.error('Error creating Excel file:', error);
-              alert('Error creating Excel file. Please try the CSV download instead.');
-            }
-          };
+          const inputData = [
+            ['Loan Amortization Calculator', ''],
+            [],
+            ['Input Parameters', 'Value'],
+            ['Starting Loan Balance', loanBalance],
+            ['Annual Interest Rate (%)', annualRate],
+            ['Monthly Payment (P&I)', monthlyPayment],
+            ['Term (months)', mode === 'term' ? termMonths : '—'],
+            ['Generated', new Date().toLocaleString()],
+            [],
+            ['Summary', 'Value'],
+            ['Months to Payoff', schedule.payments.length],
+            ['Total Interest Paid', Number(schedule.totalInterest.toFixed(2))],
+            ['Total Principal Paid', Number(schedule.totalPrincipal.toFixed(2))],
+            ['Estimated Payoff Date', getPayoffDate(schedule.payments.length - 1)]
+          ];
 
-          return (
-            <div className="container">
-              <div className="header">
-                <h1>💰 Loan Amortization Schedule</h1>
-                <div className="button-group">
-                  <button onClick={downloadExcel} className="btn-excel">
-                    📊 Download Excel
-                  </button>
-                  <button onClick={downloadCSV} className="btn-csv">
-                    📥 Download CSV
-                  </button>
+          const scheduleHeaders = ['Month','Date','Beginning Balance','Payment','Principal','Interest','Ending Balance'];
+          const scheduleData = [scheduleHeaders];
+          schedule.payments.forEach(p => {
+            scheduleData.push([
+              p.month,
+              getPayoffDate(p.month - 1),
+              Number(p.beginningBalance.toFixed(2)),
+              Number(p.payment.toFixed(2)),
+              Number(p.principal.toFixed(2)),
+              Number(p.interest.toFixed(2)),
+              Number(p.endingBalance.toFixed(2))
+            ]);
+          });
+          // totals
+          const totalPayments = Number(schedule.payments.reduce((s, x) => s + x.payment, 0).toFixed(2));
+          scheduleData.push([]);
+          scheduleData.push(['TOTALS','', Number(loanBalance.toFixed(2)), totalPayments, Number(schedule.totalPrincipal.toFixed(2)), Number(schedule.totalInterest.toFixed(2)), '']);
+
+          const wsInputs = XLSX.utils.aoa_to_sheet(inputData);
+          const wsSchedule = XLSX.utils.aoa_to_sheet(scheduleData);
+
+          wsInputs['!cols'] = [{ wch: 30 }, { wch: 18 }];
+          wsSchedule['!cols'] = [
+            { wch: 8 }, { wch: 14 }, { wch: 18 }, { wch: 12 },
+            { wch: 12 }, { wch: 12 }, { wch: 16 }
+          ];
+
+          XLSX.utils.book_append_sheet(wb, wsInputs, 'Inputs');
+          XLSX.utils.book_append_sheet(wb, wsSchedule, 'Amortization Schedule');
+
+          XLSX.writeFile(wb, 'loan_amortization.xlsx');
+        } catch (err) {
+          console.error('Excel export failed:', err);
+          alert('Failed to create Excel file. Try CSV download instead.');
+        }
+      };
+
+      const handleLoanBalanceChange = (v) => setLoanBalance(Number(v || 0));
+      const handleAnnualRateChange = (v) => setAnnualRate(Number(v || 0));
+      const handleMonthlyPaymentChange = (v) => setMonthlyPayment(Number(v || 0));
+      const handleTermMonthsChange = (v) => setTermMonths(Number(v || 0));
+
+      return (
+        <div className="container" role="main" aria-label="Loan Amortization Calculator">
+          <div className="header">
+            <h1>💰 Loan Amortization Schedule</h1>
+            <div className="button-group" role="toolbar" aria-label="Export options">
+              <button onClick={downloadExcel} className="btn-excel" title="Download as Excel">
+                📊 Download Excel
+              </button>
+              <button onClick={downloadCSV} className="btn-csv" title="Download as CSV">
+                📥 Download CSV
+              </button>
+            </div>
+          </div>
+
+          <div className="section" aria-labelledby="loan-parameters">
+            <h2 id="loan-parameters">Loan Parameters</h2>
+            <div className="input-grid">
+              <div className="input-group">
+                <label htmlFor="loanBalance">Current Balance ($)</label>
+                <input id="loanBalance" type="number" step="0.01" value={loanBalance} onChange={(e) => handleLoanBalanceChange(e.target.value)} />
+              </div>
+
+              <div className="input-group">
+                <label htmlFor="annualRate">Annual Interest Rate (%)</label>
+                <input id="annualRate" type="number" step="0.01" value={annualRate} onChange={(e) => handleAnnualRateChange(e.target.value)} />
+              </div>
+
+              <div className="input-group">
+                <label>Calculation Mode</label>
+                <div className="controls-inline">
+                  <div className="radio-group" role="radiogroup" aria-label="Calculation mode">
+                    <label style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                      <input type="radio" name="mode" value="payment" checked={mode==='payment'} onChange={() => setMode('payment')}/>
+                      Use monthly payment
+                    </label>
+                    <label style={{display:'flex',alignItems:'center',gap:'6px', marginLeft:'8px'}}>
+                      <input type="radio" name="mode" value="term" checked={mode==='term'} onChange={() => setMode('term')}/>
+                      Use term (months)
+                    </label>
+                  </div>
+                </div>
+                <div className="muted" style={{marginTop:6}}>
+                  {mode === 'payment' ? 'Enter the monthly principal & interest payment' : 'Enter desired payoff term in months; monthly payment will be calculated'}
                 </div>
               </div>
 
-              <div className="section">
-                <h2>Loan Parameters</h2>
-                <div className="input-grid">
-                  <div className="input-group">
-                    <label>Current Balance ($)</label>
-                    <input
-                      type="number"
-                      value={loanBalance}
-                      onChange={(e) => setLoanBalance(parseFloat(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div className="input-group">
-                    <label>Annual Interest Rate (%)</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={annualRate}
-                      onChange={(e) => setAnnualRate(parseFloat(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div className="input-group">
-                    <label>Monthly Payment ($)</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={monthlyPayment}
-                      onChange={(e) => setMonthlyPayment(parseFloat(e.target.value) || 0)}
-                    />
-                  </div>
-                </div>
+              <div className="input-group">
+                <label htmlFor="monthlyPayment">Monthly Payment ($)</label>
+                <input id="monthlyPayment" type="number" step="0.01" value={monthlyPayment} onChange={(e) => { handleMonthlyPaymentChange(e.target.value); setMode('payment'); }} />
               </div>
 
-              <div className="section">
-                <h2>Summary</h2>
-                <div className="summary-grid">
-                  <div className="summary-card indigo">
-                    <div className="summary-label">Months to Payoff</div>
-                    <div className="summary-value indigo">{schedule.payments.length}</div>
-                  </div>
-                  <div className="summary-card green">
-                    <div className="summary-label">Total Interest</div>
-                    <div className="summary-value green">{formatCurrency(schedule.totalInterest)}</div>
-                  </div>
-                  <div className="summary-card blue">
-                    <div className="summary-label">Total Principal</div>
-                    <div className="summary-value blue">{formatCurrency(schedule.totalPrincipal)}</div>
-                  </div>
-                  <div className="summary-card purple">
-                    <div className="summary-label">Payoff Date</div>
-                    <div className="summary-value purple">{getPayoffDate(schedule.payments.length - 1)}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Month</th>
-                      <th>Date</th>
-                      <th className="text-right">Beginning Balance</th>
-                      <th className="text-right">Payment</th>
-                      <th className="text-right">Principal</th>
-                      <th className="text-right">Interest</th>
-                      <th className="text-right">Ending Balance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {schedule.payments.map((payment, index) => (
-                      <tr key={index}>
-                        <td className="text-center">{payment.month}</td>
-                        <td>{getPayoffDate(payment.month - 1)}</td>
-                        <td className="text-right">{formatCurrency(payment.beginningBalance)}</td>
-                        <td className="text-right">{formatCurrency(payment.payment)}</td>
-                        <td className="text-right principal">{formatCurrency(payment.principal)}</td>
-                        <td className="text-right interest">{formatCurrency(payment.interest)}</td>
-                        <td className="text-right">{formatCurrency(payment.endingBalance)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colSpan="3">Totals</td>
-                      <td className="text-right">{formatCurrency(schedule.payments.reduce((sum, p) => sum + p.payment, 0))}</td>
-                      <td className="text-right principal">{formatCurrency(schedule.totalPrincipal)}</td>
-                      <td className="text-right interest">{formatCurrency(schedule.totalInterest)}</td>
-                      <td className="text-right">$0.00</td>
-                    </tr>
-                  </tfoot>
-                </table>
+              <div className="input-group">
+                <label htmlFor="termMonths">Term (months)</label>
+                <input id="termMonths" type="number" step="1" value={termMonths} onChange={(e) => { handleTermMonthsChange(e.target.value); setMode('term'); }} />
               </div>
             </div>
-          );
-        };
+            {error && <div className="error" role="alert">{error}</div>}
+          </div>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<LoanAmortization />);
+          <div className="section" aria-labelledby="summary">
+            <h2 id="summary">Summary</h2>
+            <div className="summary-grid">
+              <div className="summary-card indigo">
+                <div className="summary-label">Months to Payoff</div>
+                <div className="summary-value indigo">{schedule.payments.length}</div>
+              </div>
+
+              <div className="summary-card green">
+                <div className="summary-label">Total Interest</div>
+                <div className="summary-value green">{formatCurrency(schedule.totalInterest)}</div>
+              </div>
+
+              <div className="summary-card blue">
+                <div className="summary-label">Total Principal</div>
+                <div className="summary-value blue">{formatCurrency(schedule.totalPrincipal)}</div>
+              </div>
+
+              <div className="summary-card purple">
+                <div className="summary-label">Estimated Payoff Date</div>
+                <div className="summary-value purple">{schedule.payments.length ? getPayoffDate(schedule.payments.length - 1) : '—'}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="table-container" aria-live="polite">
+            <table>
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Date</th>
+                  <th className="text-right">Beginning Balance</th>
+                  <th className="text-right">Payment</th>
+                  <th className="text-right">Principal</th>
+                  <th className="text-right">Interest</th>
+                  <th className="text-right">Ending Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                {schedule.payments.map((p, i) => (
+                  <tr key={i}>
+                    <td className="text-center">{p.month}</td>
+                    <td>{getPayoffDate(p.month - 1)}</td>
+                    <td className="text-right">{formatCurrency(p.beginningBalance)}</td>
+                    <td className="text-right">{formatCurrency(p.payment)}</td>
+                    <td className="text-right principal">{formatCurrency(p.principal)}</td>
+                    <td className="text-right interest">{formatCurrency(p.interest)}</td>
+                    <td className="text-right">{formatCurrency(p.endingBalance)}</td>
+                  </tr>
+                ))}
+
+                {schedule.payments.length === 0 &&
+                  <tr>
+                    <td colSpan="7" className="text-center muted">No amortization schedule. Check inputs or increase monthly payment.</td>
+                  </tr>
+                }
+              </tbody>
+              {schedule.payments.length > 0 && (
+                <tfoot>
+                  <tr>
+                    <td colSpan="3">Totals</td>
+                    <td className="text-right">{formatCurrency(schedule.payments.reduce((s, x) => s + x.payment, 0))}</td>
+                    <td className="text-right principal">{formatCurrency(schedule.totalPrincipal)}</td>
+                    <td className="text-right interest">{formatCurrency(schedule.totalInterest)}</td>
+                    <td className="text-right">{formatCurrency(0)}</td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<LoanAmortization />);
     </script>
 </body>
 </html>
