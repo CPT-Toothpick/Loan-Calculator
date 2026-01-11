@@ -7,48 +7,241 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 2rem;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .header h1 {
+            color: #1e40af;
+            font-size: 2rem;
+            flex: 1;
+        }
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .btn-excel {
+            background: #16a34a;
+            color: white;
+        }
+        .btn-excel:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+        }
+        .btn-csv {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-csv:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        .section {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .section h2 {
+            color: #374151;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .input-group label {
+            display: block;
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .summary-card {
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .summary-card.indigo {
+            background: #eef2ff;
+        }
+        .summary-card.green {
+            background: #f0fdf4;
+        }
+        .summary-card.blue {
+            background: #eff6ff;
+        }
+        .summary-card.purple {
+            background: #faf5ff;
+        }
+        .summary-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            word-break: break-word;
+        }
+        @media (max-width: 480px) {
+            .summary-value {
+                font-size: 1.25rem;
+            }
+            .summary-label {
+                font-size: 0.8rem;
+            }
+        }
+        .summary-value.indigo {
+            color: #6366f1;
+        }
+        .summary-value.green {
+            color: #16a34a;
+        }
+        .summary-value.blue {
+            color: #2563eb;
+        }
+        .summary-value.purple {
+            color: #9333ea;
+        }
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead {
+            background: #4f46e5;
+            color: white;
+        }
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        th.text-right {
+            text-align: right;
+        }
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        tbody tr:hover {
+            background: #f3f4f6;
+        }
+        td {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        td.text-right {
+            text-align: right;
+        }
+        td.text-center {
+            text-align: center;
+        }
+        td.principal {
+            color: #2563eb;
+        }
+        td.interest {
+            color: #dc2626;
+        }
+        tfoot {
+            background: #f3f4f6;
+            font-weight: 600;
+        }
+        tfoot td {
+            padding: 1rem;
+            border-top: 2px solid #9ca3af;
+        }
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            button {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen py-8">
+<body>
     <div id="root"></div>
     
     <script type="text/babel">
         const { useState, useMemo } = React;
-
-        // Icon components
-        const Calculator = ({ className }) => (
-            <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect width="16" height="20" x="4" y="2" rx="2"/>
-                <line x1="8" x2="16" y1="6" y2="6"/>
-                <line x1="16" x2="16" y1="14" y2="14"/>
-                <path d="M16 10h.01"/>
-                <path d="M12 10h.01"/>
-                <path d="M8 10h.01"/>
-                <path d="M12 14h.01"/>
-                <path d="M8 14h.01"/>
-                <path d="M12 18h.01"/>
-                <path d="M8 18h.01"/>
-            </svg>
-        );
-
-        const Download = ({ className }) => (
-            <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" x2="12" y1="15" y2="3"/>
-            </svg>
-        );
-
-        const FileSpreadsheet = ({ className }) => (
-            <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-                <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-                <path d="M8 13h2"/>
-                <path d="M14 13h2"/>
-                <path d="M8 17h2"/>
-                <path d="M14 17h2"/>
-            </svg>
-        );
 
         const LoanAmortization = () => {
           const [loanBalance, setLoanBalance] = useState(31536);
@@ -94,8 +287,8 @@
             return new Intl.NumberFormat('en-US', {
               style: 'currency',
               currency: 'USD',
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0
             }).format(value);
           };
 
@@ -127,7 +320,6 @@
 
           const downloadExcel = async () => {
             try {
-              // Check if XLSX is already loaded
               if (!window.XLSX) {
                 const script = document.createElement('script');
                 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
@@ -218,129 +410,109 @@
           };
 
           return (
-            <div className="w-full max-w-6xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-lg">
-              <div className="flex items-center gap-3 mb-6 flex-wrap">
-                <Calculator className="w-8 h-8 text-indigo-600" />
-                <h1 className="text-3xl font-bold text-gray-800">Loan Amortization Schedule</h1>
-                <div className="ml-auto flex gap-2 flex-wrap">
-                  <button
-                    onClick={downloadExcel}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md"
-                  >
-                    <FileSpreadsheet className="w-5 h-5" />
-                    Download Excel
+            <div className="container">
+              <div className="header">
+                <h1>💰 Loan Amortization Schedule</h1>
+                <div className="button-group">
+                  <button onClick={downloadExcel} className="btn-excel">
+                    📊 Download Excel
                   </button>
-                  <button
-                    onClick={downloadCSV}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
-                  >
-                    <Download className="w-5 h-5" />
-                    Download CSV
+                  <button onClick={downloadCSV} className="btn-csv">
+                    📥 Download CSV
                   </button>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg p-6 mb-6 shadow">
-                <h2 className="text-xl font-semibold mb-4 text-gray-700">Loan Parameters</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">
-                      Current Balance ($)
-                    </label>
+              <div className="section">
+                <h2>Loan Parameters</h2>
+                <div className="input-grid">
+                  <div className="input-group">
+                    <label>Current Balance ($)</label>
                     <input
                       type="number"
                       value={loanBalance}
                       onChange={(e) => setLoanBalance(parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">
-                      Annual Interest Rate (%)
-                    </label>
+                  <div className="input-group">
+                    <label>Annual Interest Rate (%)</label>
                     <input
                       type="number"
                       step="0.01"
                       value={annualRate}
                       onChange={(e) => setAnnualRate(parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">
-                      Monthly Payment ($)
-                    </label>
+                  <div className="input-group">
+                    <label>Monthly Payment ($)</label>
                     <input
                       type="number"
                       step="0.01"
                       value={monthlyPayment}
                       onChange={(e) => setMonthlyPayment(parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg p-6 mb-6 shadow">
-                <h2 className="text-xl font-semibold mb-4 text-gray-700">Summary</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-indigo-50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-600 mb-1">Months to Payoff</div>
-                    <div className="text-2xl font-bold text-indigo-600">{schedule.payments.length}</div>
+              <div className="section">
+                <h2>Summary</h2>
+                <div className="summary-grid">
+                  <div className="summary-card indigo">
+                    <div className="summary-label">Months to Payoff</div>
+                    <div className="summary-value indigo">{schedule.payments.length}</div>
                   </div>
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-600 mb-1">Total Interest</div>
-                    <div className="text-2xl font-bold text-green-600">{formatCurrency(schedule.totalInterest)}</div>
+                  <div className="summary-card green">
+                    <div className="summary-label">Total Interest</div>
+                    <div className="summary-value green">{formatCurrency(schedule.totalInterest)}</div>
                   </div>
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-600 mb-1">Total Principal</div>
-                    <div className="text-2xl font-bold text-blue-600">{formatCurrency(schedule.totalPrincipal)}</div>
+                  <div className="summary-card blue">
+                    <div className="summary-label">Total Principal</div>
+                    <div className="summary-value blue">{formatCurrency(schedule.totalPrincipal)}</div>
                   </div>
-                  <div className="bg-purple-50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-600 mb-1">Payoff Date</div>
-                    <div className="text-2xl font-bold text-purple-600">{getPayoffDate(schedule.payments.length - 1)}</div>
+                  <div className="summary-card purple">
+                    <div className="summary-label">Payoff Date</div>
+                    <div className="summary-value purple">{getPayoffDate(schedule.payments.length - 1)}</div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-indigo-600 text-white">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-sm font-semibold">Month</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold">Date</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold">Beginning Balance</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold">Payment</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold">Principal</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold">Interest</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold">Ending Balance</th>
+              <div className="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Month</th>
+                      <th>Date</th>
+                      <th className="text-right">Beginning Balance</th>
+                      <th className="text-right">Payment</th>
+                      <th className="text-right">Principal</th>
+                      <th className="text-right">Interest</th>
+                      <th className="text-right">Ending Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {schedule.payments.map((payment, index) => (
+                      <tr key={index}>
+                        <td className="text-center">{payment.month}</td>
+                        <td>{getPayoffDate(payment.month - 1)}</td>
+                        <td className="text-right">{formatCurrency(payment.beginningBalance)}</td>
+                        <td className="text-right">{formatCurrency(payment.payment)}</td>
+                        <td className="text-right principal">{formatCurrency(payment.principal)}</td>
+                        <td className="text-right interest">{formatCurrency(payment.interest)}</td>
+                        <td className="text-right">{formatCurrency(payment.endingBalance)}</td>
                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {schedule.payments.map((payment, index) => (
-                        <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                          <td className="px-4 py-3 text-sm text-gray-900">{payment.month}</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">{getPayoffDate(payment.month - 1)}</td>
-                          <td className="px-4 py-3 text-sm text-right text-gray-900">{formatCurrency(payment.beginningBalance)}</td>
-                          <td className="px-4 py-3 text-sm text-right font-medium text-gray-900">{formatCurrency(payment.payment)}</td>
-                          <td className="px-4 py-3 text-sm text-right text-blue-600">{formatCurrency(payment.principal)}</td>
-                          <td className="px-4 py-3 text-sm text-right text-red-600">{formatCurrency(payment.interest)}</td>
-                          <td className="px-4 py-3 text-sm text-right font-medium text-gray-900">{formatCurrency(payment.endingBalance)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot className="bg-gray-100 font-semibold">
-                      <tr>
-                        <td colSpan="3" className="px-4 py-3 text-sm text-gray-900">Totals</td>
-                        <td className="px-4 py-3 text-sm text-right text-gray-900">{formatCurrency(schedule.payments.reduce((sum, p) => sum + p.payment, 0))}</td>
-                        <td className="px-4 py-3 text-sm text-right text-blue-600">{formatCurrency(schedule.totalPrincipal)}</td>
-                        <td className="px-4 py-3 text-sm text-right text-red-600">{formatCurrency(schedule.totalInterest)}</td>
-                        <td className="px-4 py-3 text-sm text-right text-gray-900">$0.00</td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colSpan="3">Totals</td>
+                      <td className="text-right">{formatCurrency(schedule.payments.reduce((sum, p) => sum + p.payment, 0))}</td>
+                      <td className="text-right principal">{formatCurrency(schedule.totalPrincipal)}</td>
+                      <td className="text-right interest">{formatCurrency(schedule.totalInterest)}</td>
+                      <td className="text-right">$0.00</td>
+                    </tr>
+                  </tfoot>
+                </table>
               </div>
             </div>
           );
